@@ -107,8 +107,7 @@ function embedMovie(tmdbId) {
             const searchContainer = document.getElementById('searchContainer');
             searchContainer.appendChild(playerContainer);
 
-            // Llama a la función para monitorear el iframe
-            monitorIframe();
+            monitorIframeClicks();
         } else {
             console.error('No se pudo obtener el ID de IMDb.');
         }
@@ -132,8 +131,7 @@ function embedTvShow(tmdbId, season, episode) {
     document.getElementById('seasonInput').value = season;
     document.getElementById('episodeInput').value = episode;
 
-    // Llama a la función para monitorear el iframe
-    monitorIframe();
+    monitorIframeClicks();
 }
 
 function fetchContentDetails(contentId) {
@@ -211,29 +209,23 @@ function updateEpisode() {
     }
 }
 
-// Función para monitorear el iframe y prevenir pop-ups
-function monitorIframe() {
+// Función para monitorear clics en el iframe
+function monitorIframeClicks() {
     const iframe = document.getElementById('videoPlayer');
+
     iframe.onload = () => {
-        const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
-
-        // Interceptar el evento window.open
-        iframe.contentWindow.open = function(url) {
-            console.log(`Attempted to open: ${url}`);
-            return null; // Cancel the popup
-        };
-
-        // También podemos usar MutationObserver para monitorear cambios en el iframe
-        const observer = new MutationObserver(() => {
-            const iframeContentWindow = iframe.contentWindow;
-            if (iframeContentWindow) {
-                iframeContentWindow.open = function(url) {
-                    console.log(`Attempted to open: ${url}`);
-                    return null; // Cancel the popup
-                };
-            }
+        iframe.contentWindow.document.addEventListener('click', (event) => {
+            // Previene el evento click para bloquear pop-ups
+            event.preventDefault();
+            event.stopPropagation();
+            console.log('Click intercepted and pop-up prevented.');
         });
 
-        observer.observe(iframeDocument, { attributes: true, childList: true, subtree: true });
+        iframe.contentWindow.addEventListener('click', (event) => {
+            // Previene el evento click para bloquear pop-ups
+            event.preventDefault();
+            event.stopPropagation();
+            console.log('Click intercepted and pop-up prevented.');
+        });
     };
 }
