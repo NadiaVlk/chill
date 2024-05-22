@@ -211,40 +211,26 @@ function updateEpisode() {
 
 function monitorIframe() {
     const iframe = document.getElementById('videoPlayer');
-
     iframe.onload = () => {
-        // Block script injections attempting to open new windows/tabs
-        const blockScripts = `
-            const openOriginal = window.open;
-            window.open = function() { console.log('Blocked pop-up'); };
-            document.querySelectorAll('a').forEach(a => {
-                a.addEventListener('click', event => {
+        const iframeWindow = iframe.contentWindow;
+
+        // Override window.open
+        iframeWindow.open = function() {
+            console.log('Blocked attempt to open a new window.');
+        };
+
+        // Override target="_blank" links
+        const observer = new MutationObserver(() => {
+            const anchors = iframeWindow.document.querySelectorAll('a[target="_blank"]');
+            anchors.forEach(anchor => {
+                anchor.removeAttribute('target');
+                anchor.addEventListener('click', event => {
                     event.preventDefault();
-                    event.stopPropagation();
-                    console.log('Blocked click on link:', a.href);
+                    console.log('Blocked link opening in a new tab.');
                 });
             });
-        `;
-        const scriptElement = document.createElement('script');
-        scriptElement.textContent = blockScripts;
-        iframe.contentWindow.document.head.appendChild(scriptElement);
-
-        // Observe for any new elements attempting to change window location
-        const observer = new MutationObserver(mutations => {
-            mutations.forEach(mutation => {
-                if (mutation.type === 'childList') {
-                    mutation.addedNodes.forEach(node => {
-                        if (node.tagName === 'A') {
-                            node.addEventListener('click', event => {
-                                event.preventDefault();
-                                event.stopPropagation();
-                                console.log('Blocked dynamically added link:', node.href);
-                            });
-                        }
-                    });
-                }
-            });
         });
-        observer.observe(iframe.contentWindow.document.body, { childList: true, subtree: true });
+
+        observer.observe(iframeWindow.document.body, { childList: true, subtree: true });
     };
 }
