@@ -211,10 +211,29 @@ function updateEpisode() {
     }
 }
 
-// Función para monitorear el iframe y recargarlo si se pierde el foco
+// Función para monitorear el iframe y prevenir pop-ups
 function monitorIframe() {
     const iframe = document.getElementById('videoPlayer');
-    iframe.addEventListener('blur', () => {
-        iframe.src = iframe.src; // Recarga el iframe
+    iframe.contentWindow.addEventListener('blur', () => {
+        // Bloquea la apertura de ventanas emergentes
+        const popup = window.open("", "_self");
+        if (popup) {
+            popup.close();
+        }
     });
+
+    // Utiliza un MutationObserver para detectar cambios en el iframe
+    const observer = new MutationObserver(() => {
+        const iframeContent = iframe.contentWindow || iframe.contentDocument.defaultView;
+        if (iframeContent) {
+            iframeContent.addEventListener('blur', () => {
+                const popup = window.open("", "_self");
+                if (popup) {
+                    popup.close();
+                }
+            });
+        }
+    });
+
+    observer.observe(iframe, { attributes: true, childList: true, subtree: true });
 }
