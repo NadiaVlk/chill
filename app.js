@@ -107,7 +107,8 @@ function embedMovie(tmdbId) {
             const searchContainer = document.getElementById('searchContainer');
             searchContainer.appendChild(playerContainer);
 
-            blockPopups();
+            // Llama a la función para monitorear el iframe
+            monitorIframe();
         } else {
             console.error('No se pudo obtener el ID de IMDb.');
         }
@@ -131,7 +132,8 @@ function embedTvShow(tmdbId, season, episode) {
     document.getElementById('seasonInput').value = season;
     document.getElementById('episodeInput').value = episode;
 
-    blockPopups();
+    // Llama a la función para monitorear el iframe
+    monitorIframe();
 }
 
 function fetchContentDetails(contentId) {
@@ -209,15 +211,10 @@ function updateEpisode() {
     }
 }
 
-// Función para bloquear pop-ups
-function blockPopups() {
-    let originalWindowOpen = window.open;
-    window.open = function(url, name, specs) {
-        if (url && (url.includes('vidsrc.to') || url.includes('tmdb.org'))) {
-            return originalWindowOpen(url, name, specs);
-        } else {
-            console.log('Pop-up bloqueado:', url);
-            return null;
-        }
-    };
+// Función para monitorear el iframe y recargarlo si se pierde el foco
+function monitorIframe() {
+    const iframe = document.getElementById('videoPlayer');
+    iframe.addEventListener('blur', () => {
+        iframe.src = iframe.src; // Recarga el iframe
+    });
 }
