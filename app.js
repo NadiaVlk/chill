@@ -208,3 +208,19 @@ function updateEpisode() {
         embedTvShow(currentTmdbId, currentSeason, currentEpisode);
     }
 }
+
+// Función para bloquear pop-ups
+function blockPopups() {
+    const iframe = document.getElementById('videoPlayer');
+
+    // Interceptar eventos de 'click' en el iframe
+    iframe.contentWindow.addEventListener('click', function(event) {
+        // Prevenir que cualquier enlace abra una nueva pestaña o ventana
+        event.preventDefault();
+    });
+
+    // Interceptar cualquier nueva ventana o pestaña abierta desde el iframe
+    iframe.contentWindow.open = function() {
+        return null;
+    };
+}
