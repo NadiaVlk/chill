@@ -107,7 +107,7 @@ function embedMovie(tmdbId) {
             const searchContainer = document.getElementById('searchContainer');
             searchContainer.appendChild(playerContainer);
 
-            monitorIframeClicks();
+            monitorIframe();
         } else {
             console.error('No se pudo obtener el ID de IMDb.');
         }
@@ -131,7 +131,7 @@ function embedTvShow(tmdbId, season, episode) {
     document.getElementById('seasonInput').value = season;
     document.getElementById('episodeInput').value = episode;
 
-    monitorIframeClicks();
+    monitorIframe();
 }
 
 function fetchContentDetails(contentId) {
@@ -209,23 +209,42 @@ function updateEpisode() {
     }
 }
 
-// Función para monitorear clics en el iframe
-function monitorIframeClicks() {
+function monitorIframe() {
     const iframe = document.getElementById('videoPlayer');
 
     iframe.onload = () => {
-        iframe.contentWindow.document.addEventListener('click', (event) => {
-            // Previene el evento click para bloquear pop-ups
-            event.preventDefault();
-            event.stopPropagation();
-            console.log('Click intercepted and pop-up prevented.');
-        });
+        // Block script injections attempting to open new windows/tabs
+        const blockScripts = `
+            const openOriginal = window.open;
+            window.open = function() { console.log('Blocked pop-up'); };
+            document.querySelectorAll('a').forEach(a => {
+                a.addEventListener('click', event => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    console.log('Blocked click on link:', a.href);
+                });
+            });
+        `;
+        const scriptElement = document.createElement('script');
+        scriptElement.textContent = blockScripts;
+        iframe.contentWindow.document.head.appendChild(scriptElement);
 
-        iframe.contentWindow.addEventListener('click', (event) => {
-            // Previene el evento click para bloquear pop-ups
-            event.preventDefault();
-            event.stopPropagation();
-            console.log('Click intercepted and pop-up prevented.');
+        // Observe for any new elements attempting to change window location
+        const observer = new MutationObserver(mutations => {
+            mutations.forEach(mutation => {
+                if (mutation.type === 'childList') {
+                    mutation.addedNodes.forEach(node => {
+                        if (node.tagName === 'A') {
+                            node.addEventListener('click', event => {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                console.log('Blocked dynamically added link:', node.href);
+                            });
+                        }
+                    });
+                }
+            });
         });
+        observer.observe(iframe.contentWindow.document.body, { childList: true, subtree: true });
     };
 }
