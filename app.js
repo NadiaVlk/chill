@@ -31,12 +31,11 @@ function searchContent(query) {
     const apiKey = 'e2e05b26a02be183714d56f9ad0d0900';
     const url = `https://api.themoviedb.org/3/search/${type}?api_key=${apiKey}&query=${encodeURIComponent(query)}`;
 
-    // Ocultar el cuadro del video anterior y limpiar el contenido
     const playerContainer = document.getElementById('player');
     playerContainer.style.display = 'none';
     playerContainer.innerHTML = '';
     document.getElementById('imdbIdDisplay').textContent = '';
-    hideEpisodeControls(); // Ocultar controles de episodios
+    hideEpisodeControls();
 
     fetch(url)
         .then(response => {
@@ -54,7 +53,6 @@ function searchContent(query) {
         })
         .catch(error => console.error('Error:', error));
 }
-
 
 function displayResults(results) {
     const resultsContainer = document.getElementById('results');
@@ -81,7 +79,7 @@ function displayResults(results) {
             const type = document.getElementById('typeSelector').value;
             if (type === 'tv') {
                 showEpisodeControls();
-                embedTvShow(result.id, 1, 1); // Temporada 1, Episodio 1
+                embedTvShow(result.id, 1, 1);
             } else {
                 hideEpisodeControls();
                 embedMovie(result.id);
@@ -100,7 +98,7 @@ function embedMovie(tmdbId) {
         if (imdbId) {
             const embedUrl = `https://vidsrc.to/embed/movie/${imdbId}`;
             const playerContainer = document.getElementById('player');
-            playerContainer.innerHTML = `<iframe src="${embedUrl}" width="800" height="450" frameborder="0" allowfullscreen></iframe>`;
+            playerContainer.innerHTML = `<iframe id="videoPlayer" src="${embedUrl}" width="800" height="450" frameborder="0" allowfullscreen></iframe>`;
             playerContainer.style.display = 'block';
 
             const resultsContainer = document.getElementById('results');
@@ -108,6 +106,8 @@ function embedMovie(tmdbId) {
 
             const searchContainer = document.getElementById('searchContainer');
             searchContainer.appendChild(playerContainer);
+
+            blockPopups();
         } else {
             console.error('No se pudo obtener el ID de IMDb.');
         }
@@ -117,7 +117,7 @@ function embedMovie(tmdbId) {
 function embedTvShow(tmdbId, season, episode) {
     const embedUrl = `https://vidsrc.to/embed/tv/${tmdbId}/${season}/${episode}`;
     const playerContainer = document.getElementById('player');
-    playerContainer.innerHTML = `<iframe src="${embedUrl}" width="800" height="450" frameborder="0" allowfullscreen></iframe>`;
+    playerContainer.innerHTML = `<iframe id="videoPlayer" src="${embedUrl}" width="800" height="450" frameborder="0" allowfullscreen></iframe>`;
     playerContainer.style.display = 'block';
 
     const resultsContainer = document.getElementById('results');
@@ -126,13 +126,13 @@ function embedTvShow(tmdbId, season, episode) {
     const searchContainer = document.getElementById('searchContainer');
     searchContainer.appendChild(playerContainer);
 
-    // Actualizar la temporada y episodio actuales
     currentSeason = season;
     currentEpisode = episode;
     document.getElementById('seasonInput').value = season;
     document.getElementById('episodeInput').value = episode;
-}
 
+    blockPopups();
+}
 
 function fetchContentDetails(contentId) {
     const type = document.getElementById('typeSelector').value;
@@ -172,7 +172,7 @@ function changeSeason(change) {
     const newSeason = currentSeason + change;
     if (newSeason >= 1) {
         currentSeason = newSeason;
-        currentEpisode = 1; // Reset episode to 1 when changing season
+        currentEpisode = 1;
         document.getElementById('seasonInput').value = currentSeason;
         document.getElementById('episodeInput').value = currentEpisode;
 
@@ -193,7 +193,7 @@ function updateSeason() {
     const newSeason = parseInt(document.getElementById('seasonInput').value);
     if (newSeason >= 1) {
         currentSeason = newSeason;
-        currentEpisode = 1; // Reset episode to 1 when changing season
+        currentEpisode = 1;
         document.getElementById('episodeInput').value = currentEpisode;
 
         embedTvShow(currentTmdbId, currentSeason, currentEpisode);
@@ -211,16 +211,13 @@ function updateEpisode() {
 
 // Función para bloquear pop-ups
 function blockPopups() {
-    const iframe = document.getElementById('playerContainer');
-
-    // Interceptar eventos de 'click' en el iframe
-    iframe.contentWindow.addEventListener('click', function(event) {
-        // Prevenir que cualquier enlace abra una nueva pestaña o ventana
-        event.preventDefault();
-    });
-
-    // Interceptar cualquier nueva ventana o pestaña abierta desde el iframe
-    iframe.contentWindow.open = function() {
-        return null;
+    let originalWindowOpen = window.open;
+    window.open = function(url, name, specs) {
+        if (url && (url.includes('vidsrc.to') || url.includes('tmdb.org'))) {
+            return originalWindowOpen(url, name, specs);
+        } else {
+            console.log('Pop-up bloqueado:', url);
+            return null;
+        }
     };
 }
