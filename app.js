@@ -211,7 +211,7 @@ function updateEpisode() {
 
 // Función para bloquear pop-ups
 function blockPopups() {
-    const iframe = document.getElementById('videoPlayer');
+    const iframe = document.getElementById('playerContainer');
 
     // Interceptar eventos de 'click' en el iframe
     iframe.contentWindow.addEventListener('click', function(event) {
