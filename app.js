@@ -98,7 +98,7 @@ function embedMovie(tmdbId) {
         if (imdbId) {
             const embedUrl = `https://vidsrc.me/embed/movie/${imdbId}`;
             const playerContainer = document.getElementById('player');
-            playerContainer.innerHTML = `<iframe id="videoPlayer" src="${embedUrl}" width="800" height="450" frameborder="0" allowfullscreen></iframe>`;
+            playerContainer.innerHTML = `<iframe id="videoPlayer" src="${embedUrl}" width="800" height="450" frameborder="0" allowfullscreen referrerpolicy="origin"></iframe>`;
             playerContainer.style.display = 'block';
 
             const resultsContainer = document.getElementById('results');
@@ -117,7 +117,7 @@ function embedMovie(tmdbId) {
 function embedTvShow(tmdbId, season, episode) {
     const embedUrl = `https://vidsrc.me/embed/tv/${tmdbId}/${season}/${episode}`;
     const playerContainer = document.getElementById('player');
-    playerContainer.innerHTML = `<iframe id="videoPlayer" src="${embedUrl}" width="800" height="450" frameborder="0" allowfullscreen></iframe>`;
+    playerContainer.innerHTML = `<iframe id="videoPlayer" src="${embedUrl}" width="800" height="450" frameborder="0" allowfullscreen referrerpolicy="origin"></iframe>`;
     playerContainer.style.display = 'block';
 
     const resultsContainer = document.getElementById('results');
