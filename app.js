@@ -145,6 +145,39 @@ function embedTvShow(tmdbId, season, episode) {
     monitorIframe();
 }
 
+function fetchContentDetails(contentId) {
+    const type = document.getElementById('typeSelector').value;
+    const apiKey = 'e2e05b26a02be183714d56f9ad0d0900';
+    const url = `https://api.themoviedb.org/3/${type}/${contentId}?api_key=${apiKey}`;
+
+    return fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            return data.imdb_id ? data.imdb_id : null;
+        })
+        .catch(error => {
+            console.error('Error fetching content details:', error);
+            return null;
+        });
+}
+
+function displayTmdbId(tmdbId) {
+    const tmdbIdDisplay = document.getElementById('imdbIdDisplay');
+    tmdbIdDisplay.textContent = `TMDB ID: ${tmdbId}`;
+}
+
+function displayNoResults() {
+    const resultsContainer = document.getElementById('results');
+    resultsContainer.innerHTML = '<p>No se encontraron resultados.</p>';
+}
+
+function showEpisodeControls() {
+    document.getElementById('episodeControls').style.display = 'flex';
+}
+
+function hideEpisodeControls() {
+    document.getElementById('episodeControls').style.display = 'none';
+}
 
 function changeSeason(change) {
     const newSeason = currentSeason + change;
@@ -173,4 +206,31 @@ function changeEpisode(change) {
         embedTvShow(currentTmdbId, currentSeason, currentEpisode);
     }
 }
-// Resto del código JavaScript (sin cambios)
+
+function monitorIframe() {
+    const iframe = document.getElementById('videoPlayer');
+    if (iframe) {
+        iframe.onload = () => {
+            const iframeWindow = iframe.contentWindow;
+
+            // Override window.open
+            iframeWindow.open = function() {
+                console.log('Blocked attempt to open a new window.');
+            };
+
+            // Override target="_blank" links
+            const observer = new MutationObserver(() => {
+                const anchors = iframeWindow.document.querySelectorAll('a[target="_blank"]');
+                anchors.forEach(anchor => {
+                    anchor.removeAttribute('target');
+                    anchor.addEventListener('click', event => {
+                        event.preventDefault();
+                        console.log('Blocked link opening in a new tab.');
+                    });
+                });
+            });
+
+            observer.observe(iframeWindow.document.body, { childList: true, subtree: true });
+        };
+    }
+}
