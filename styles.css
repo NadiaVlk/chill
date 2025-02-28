@@ -1,47 +1,73 @@
 body {
     font-family: Arial, sans-serif;
     padding: 20px;
+    background-color: #f4f4f4;
 }
 
 #searchContainer {
     margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
 }
 
 #searchInput {
     width: 300px;
     padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
 #searchButton {
-    padding: 10px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#searchButton:hover {
+    background-color: #0056b3;
 }
 
 #typeSelector {
     padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
 #results {
     margin-top: 20px;
-    display: flex; /* Usa Flexbox para alinear los elementos en una fila */
-    flex-wrap: wrap; /* Permite que los elementos se envuelvan si no caben en una sola línea */
-    gap: 20px; /* Espacio entre los elementos */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
 }
 
 .result-item {
-    text-align: center; /* Centra el texto debajo de la imagen */
-    flex: 1 1 150px; /* Ajusta el tamaño de los elementos */
-    max-width: 150px; /* Ancho máximo de cada elemento */
+    text-align: center;
+    flex: 1 1 150px;
+    max-width: 150px;
+    background-color: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .result-item img {
-    max-width: 100%; /* Asegura que la imagen no exceda el ancho del contenedor */
-    height: auto; /* Mantiene la proporción de la imagen */
-    border-radius: 8px; /* Opcional: bordes redondeados para las imágenes */
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.result-item h2 {
+    font-size: 16px;
+    margin: 10px 0 5px;
 }
 
 .result-item p {
-    margin-top: 10px; /* Espacio entre la imagen y el texto */
-    font-size: 14px; /* Tamaño del texto */
+    font-size: 14px;
+    color: #555;
 }
 
 #player {
@@ -51,11 +77,11 @@ body {
     padding: 20px;
     border: 1px solid #ccc;
     box-sizing: border-box;
-    display: none; /* Oculto por defecto */
+    display: none;
 }
 
 #episodeControls {
-    display: none; /* Oculto por defecto */
+    display: none;
     justify-content: center;
     align-items: center;
     gap: 10px;
@@ -64,4 +90,6 @@ body {
 
 #imdbIdDisplay {
     margin-top: 20px;
+    font-size: 14px;
+    color: #333;
 }
