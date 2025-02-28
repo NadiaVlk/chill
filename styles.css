@@ -3,12 +3,20 @@ body {
     padding: 20px;
 }
 
+#searchContainer {
+    margin-bottom: 20px;
+}
+
 #searchInput {
     width: 300px;
     padding: 10px;
 }
 
 #searchButton {
+    padding: 10px;
+}
+
+#typeSelector {
     padding: 10px;
 }
 
@@ -22,12 +30,18 @@ body {
 .result-item {
     text-align: center; /* Centra el texto debajo de la imagen */
     flex: 1 1 150px; /* Ajusta el tamaño de los elementos */
+    max-width: 150px; /* Ancho máximo de cada elemento */
 }
 
 .result-item img {
-    max-width: 100px;
-    display: block; /* Asegura que la imagen esté centrada */
-    margin: 0 auto; /* Centra la imagen horizontalmente */
+    max-width: 100%; /* Asegura que la imagen no exceda el ancho del contenedor */
+    height: auto; /* Mantiene la proporción de la imagen */
+    border-radius: 8px; /* Opcional: bordes redondeados para las imágenes */
+}
+
+.result-item p {
+    margin-top: 10px; /* Espacio entre la imagen y el texto */
+    font-size: 14px; /* Tamaño del texto */
 }
 
 #player {
@@ -37,11 +51,17 @@ body {
     padding: 20px;
     border: 1px solid #ccc;
     box-sizing: border-box;
+    display: none; /* Oculto por defecto */
 }
 
 #episodeControls {
-    display: flex;
+    display: none; /* Oculto por defecto */
     justify-content: center;
     align-items: center;
     gap: 10px;
+    margin-top: 20px;
+}
+
+#imdbIdDisplay {
+    margin-top: 20px;
 }
