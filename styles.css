@@ -14,14 +14,20 @@ body {
 
 #results {
     margin-top: 20px;
+    display: flex; /* Usa Flexbox para alinear los elementos en una fila */
+    flex-wrap: wrap; /* Permite que los elementos se envuelvan si no caben en una sola línea */
+    gap: 20px; /* Espacio entre los elementos */
 }
 
 .result-item {
-    margin-bottom: 20px;
+    text-align: center; /* Centra el texto debajo de la imagen */
+    flex: 1 1 150px; /* Ajusta el tamaño de los elementos */
 }
 
 .result-item img {
     max-width: 100px;
+    display: block; /* Asegura que la imagen esté centrada */
+    margin: 0 auto; /* Centra la imagen horizontalmente */
 }
 
 #player {
