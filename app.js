@@ -93,4 +93,84 @@ function displayResults(results) {
     });
 }
 
+function updateContentInfo(title, season = null, episode = null) {
+    const contentInfo = document.getElementById('currentContentInfo');
+    if (season !== null && episode !== null) {
+        contentInfo.textContent = `${title} - Temporada ${season}, Episodio ${episode}`;
+    } else {
+        contentInfo.textContent = title;
+    }
+}
+
+function embedMovie(tmdbId) {
+    fetchContentDetails(tmdbId).then(imdbId => {
+        if (imdbId) {
+            const embedUrl = `https://vidsrc.me/embed/movie/${imdbId}`;
+            const playerContainer = document.getElementById('player');
+            playerContainer.innerHTML = `<iframe id="videoPlayer" src="${embedUrl}" width="800" height="450" frameborder="0" allowfullscreen referrerpolicy="origin"></iframe>`;
+            playerContainer.style.display = 'block';
+
+            const resultsContainer = document.getElementById('results');
+            resultsContainer.innerHTML = '';
+
+            // Actualizar el título de la película
+            const title = document.querySelector(`img[data-tmdb-id="${tmdbId}"]`).alt;
+            updateContentInfo(title);
+
+            monitorIframe();
+        } else {
+            console.error('No se pudo obtener el ID de IMDb.');
+        }
+    });
+}
+
+function embedTvShow(tmdbId, season, episode) {
+    const embedUrl = `https://vidsrc.me/embed/tv/${tmdbId}/${season}/${episode}`;
+    const playerContainer = document.getElementById('player');
+    playerContainer.innerHTML = `<iframe id="videoPlayer" src="${embedUrl}" width="800" height="450" frameborder="0" allowfullscreen referrerpolicy="origin"></iframe>`;
+    playerContainer.style.display = 'block';
+
+    const resultsContainer = document.getElementById('results');
+    resultsContainer.innerHTML = '';
+
+    // Actualizar el título de la serie y la información de temporada/episodio
+    const title = document.querySelector(`img[data-tmdb-id="${tmdbId}"]`).alt;
+    updateContentInfo(title, season, episode);
+
+    currentSeason = season;
+    currentEpisode = episode;
+    document.getElementById('seasonInput').value = season;
+    document.getElementById('episodeInput').value = episode;
+
+    monitorIframe();
+}
+
+
+function changeSeason(change) {
+    const newSeason = currentSeason + change;
+    if (newSeason >= 1) {
+        currentSeason = newSeason;
+        currentEpisode = 1;
+        document.getElementById('seasonInput').value = currentSeason;
+        document.getElementById('episodeInput').value = currentEpisode;
+
+        const title = document.querySelector(`img[data-tmdb-id="${currentTmdbId}"]`).alt;
+        updateContentInfo(title, currentSeason, currentEpisode);
+
+        embedTvShow(currentTmdbId, currentSeason, currentEpisode);
+    }
+}
+
+function changeEpisode(change) {
+    const newEpisode = currentEpisode + change;
+    if (newEpisode >= 1) {
+        currentEpisode = newEpisode;
+        document.getElementById('episodeInput').value = currentEpisode;
+
+        const title = document.querySelector(`img[data-tmdb-id="${currentTmdbId}"]`).alt;
+        updateContentInfo(title, currentSeason, currentEpisode);
+
+        embedTvShow(currentTmdbId, currentSeason, currentEpisode);
+    }
+}
 // Resto del código JavaScript (sin cambios)
